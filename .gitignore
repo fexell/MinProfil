@@ -1,0 +1,13 @@
+# SQLite-databas skapas vid uppstart
+*.db
+*.db-shm
+*.db-wal
+
+# Byggartefakter
+bin/
+obj/
+
+# Editor- och IDE-filer
+.vs/
+.vscode/
+*.user

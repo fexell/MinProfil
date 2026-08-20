@@ -1,0 +1,35 @@
+@page "/login"
+
+<PageTitle>Logga in</PageTitle>
+
+<h1>Logga in</h1>
+
+@if (Error)
+{
+    <div class="alert alert-danger" role="alert">
+        Fel användarnamn eller lösenord.
+    </div>
+}
+
+<form method="post" action="/auth/login" style="max-width:22rem">
+    <div class="mb-3">
+        <label class="form-label" for="username">Användarnamn</label>
+        <input class="form-control" id="username" name="username" autocomplete="off" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="password">Lösenord</label>
+        <input class="form-control" id="password" name="password" type="password" autocomplete="off" />
+    </div>
+    <button class="btn btn-primary" type="submit">Logga in</button>
+</form>
+
+<p class="mt-4 text-muted">
+    Testkonto: <code>anna</code> / <code>sommar2025</code>
+</p>
+
+@code {
+    [SupplyParameterFromQuery(Name = "error")]
+    public int? ErrorFlag { get; set; }
+
+    private bool Error => ErrorFlag == 1;
+}

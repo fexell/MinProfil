@@ -1,0 +1,43 @@
+@page "/profile"
+@inject CurrentUser Current
+@inject NavigationManager Navigation
+
+<PageTitle>Min profil</PageTitle>
+
+@{
+    var user = Current.Get();
+}
+
+@if (user is null)
+{
+    <h1>Min profil</h1>
+    <p>Du måste vara inloggad. <a href="/login">Logga in här</a>.</p>
+}
+else
+{
+    <h1>Min profil</h1>
+    <p>Inloggad som <strong>@user.DisplayName</strong> (@user.Username).</p>
+
+    <h2>Din presentation</h2>
+    <p>Så här visas din presentation för andra medlemmar:</p>
+
+    <div class="border rounded p-3 mb-4 bg-light">
+        @((MarkupString)user.Presentation)
+    </div>
+
+    <form method="post" action="/profile/save" style="max-width:40rem">
+        <div class="mb-3">
+            <label class="form-label" for="presentation">Ändra din presentation</label>
+            <textarea class="form-control" id="presentation" name="presentation" rows="4">@user.Presentation</textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Spara</button>
+    </form>
+
+    <p class="mt-4">
+        <a href="/members">Se alla medlemmar</a>
+    </p>
+
+    <form method="post" action="/auth/logout" style="margin-top:1rem">
+        <button class="btn btn-outline-secondary" type="submit">Logga ut</button>
+    </form>
+}

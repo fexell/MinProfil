@@ -1,0 +1,29 @@
+@page "/"
+@inject CurrentUser Current
+
+<PageTitle>MinProfil</PageTitle>
+
+<h1>Välkommen till MinProfil</h1>
+
+<p>En liten tjänst där du loggar in och skriver en presentation om dig själv som andra kan läsa.</p>
+
+@{
+    var user = Current.Get();
+}
+
+@if (user is null)
+{
+    <p>Du är inte inloggad. <a href="/login">Logga in</a> för att komma till din profil.</p>
+}
+else
+{
+    <p>Du är inloggad som <strong>@user.DisplayName</strong>.</p>
+    <p>
+        <a href="/profile">Till din profil</a>
+        &nbsp;|&nbsp;
+        <a href="/members">Se alla medlemmar</a>
+    </p>
+    <form method="post" action="/auth/logout" style="margin-top:1rem">
+        <button class="btn btn-outline-secondary" type="submit">Logga ut</button>
+    </form>
+}

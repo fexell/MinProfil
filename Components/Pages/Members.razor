@@ -1,0 +1,30 @@
+@page "/members"
+@inject CurrentUser Current
+@inject AppDatabase Database
+
+<PageTitle>Medlemmar</PageTitle>
+
+@{
+    var user = Current.Get();
+}
+
+@if (user is null)
+{
+    <h1>Medlemmar</h1>
+    <p>Du måste vara inloggad. <a href="/login">Logga in här</a>.</p>
+}
+else
+{
+    <h1>Medlemmar</h1>
+    <p>Alla medlemmar och deras presentationer.</p>
+
+    @foreach (var member in Database.GetAll())
+    {
+        <div class="border rounded p-3 mb-3">
+            <h3>@member.DisplayName</h3>
+            <div>@((MarkupString)member.Presentation)</div>
+        </div>
+    }
+
+    <p><a href="/profile">Tillbaka till din profil</a></p>
+}
