@@ -40,7 +40,13 @@ app.MapPost("/auth/login", (HttpContext http, AppDatabase db, SessionStore sessi
     }
 
     var token = sessions.Create(user.Id);
-    http.Response.Cookies.Append(CurrentUser.CookieName, token);
+    http.Response.Cookies.Append(CurrentUser.CookieName, token, new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Strict,
+        Path = "/",
+    });
 
     return Results.Redirect("/profile");
 }).DisableAntiforgery();
@@ -48,7 +54,12 @@ app.MapPost("/auth/login", (HttpContext http, AppDatabase db, SessionStore sessi
 // ── Utloggning ─────────────────────────────────────────────────────────────
 app.MapPost("/auth/logout", (HttpContext http, SessionStore sessions) =>
 {
-    http.Response.Cookies.Delete(CurrentUser.CookieName);
+    http.Response.Cookies.Delete(CurrentUser.CookieName, new CookieOptions
+    {
+        Path = "/",
+        Secure = true,
+        SameSite = SameSiteMode.Strict,
+    });
 
     return Results.Redirect("/");
 }).DisableAntiforgery();
