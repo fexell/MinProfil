@@ -7,12 +7,24 @@ using System.Security.Cryptography;
 // pekar ut vilken användare sessionen tillhör.
 public class SessionStore
 {
-    private readonly ConcurrentDictionary<string, int> _sessions = new();
+    private static readonly TimeSpan SessionLifetime = TimeSpan.FromMinutes(30);
+
+    private sealed class Session
+    {
+        public required int UserId { get; init; }
+        public required DateTimeOffset Expires { get; set; }
+    }
+
+    private readonly ConcurrentDictionary<string, Session> _sessions = new();
 
     public string Create(int userId)
     {
         var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-        _sessions[token] = userId;
+        _sessions[token] = new Session
+        {
+            UserId = userId,
+            Expires = DateTimeOffset.UtcNow.Add(SessionLifetime),
+        };
         return token;
     }
 
@@ -23,7 +35,19 @@ public class SessionStore
             return null;
         }
 
-        return _sessions.TryGetValue(token, out var userId) ? userId : null;
+        if (!_sessions.TryGetValue(token, out var session))
+        {
+            return null;
+        }
+
+        if (session.Expires < DateTimeOffset.UtcNow)
+        {
+            _sessions.TryRemove(token, out _);
+            return null;
+        }
+
+        session.Expires = DateTimeOffset.UtcNow.Add(SessionLifetime);
+        return session.UserId;
     }
 
     public void Invalidate(string? token)

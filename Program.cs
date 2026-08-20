@@ -46,6 +46,7 @@ app.MapPost("/auth/login", (HttpContext http, AppDatabase db, SessionStore sessi
         Secure = true,
         SameSite = SameSiteMode.Strict,
         Path = "/",
+        MaxAge = TimeSpan.FromMinutes(30),
     });
 
     return Results.Redirect("/profile");
@@ -54,6 +55,8 @@ app.MapPost("/auth/login", (HttpContext http, AppDatabase db, SessionStore sessi
 // ── Utloggning ─────────────────────────────────────────────────────────────
 app.MapPost("/auth/logout", (HttpContext http, SessionStore sessions) =>
 {
+    sessions.Invalidate(http.Request.Cookies[CurrentUser.CookieName]);
+
     http.Response.Cookies.Delete(CurrentUser.CookieName, new CookieOptions
     {
         Path = "/",
